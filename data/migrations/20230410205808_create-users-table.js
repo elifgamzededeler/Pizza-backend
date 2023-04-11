@@ -95,3 +95,4 @@ exports.down = function (knex) {
     .dropTableIfExists("users")
     .dropTableIfExists("roles");
 };
+//bu sayfadaki kodlarım bitince npm run migrate yapıyorum (o da knex migrate:latest yapıyor, package json dosyasında açılımını yazmıştık)
