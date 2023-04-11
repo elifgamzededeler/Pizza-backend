@@ -6,13 +6,15 @@
 module.exports = {
   development: {
     client: "sqlite3",
+    useNullAsDefault: true,
     connection: {
       filename: "./data/pizza.db3",
     },
-    useNullAsDefault: true,
+    // foreign key kullanacak isek aşağıdakini de ekliyoruz:
     pool: {
       afterCreate: (conn, done) => {
-        conn.run("PRAGMA foreign_keys = ON", done);
+        // sqlite engine'e bağlandığımızda aşağıdaki kod çalışacak:
+        conn.run("PRAGMA foreign_keys = ON", done); // FK kullanımını açmaya zorlayacak
       },
     },
     migrations: {
