@@ -13,12 +13,13 @@ exports.up = function (knex) {
       tbl.string("name", 64).notNullable();
       tbl.string("surname", 64).notNullable();
       tbl.string("email", 128).notNullable();
+      tbl.string("password", 128).notNullable();
       tbl
         .integer("role_id")
         .defaultTo(2) //eğer set etmemişsek defaultı 2 olsun. 1e admin, 2ye normal user diyeceğim
         .notNullable()
         .unsigned()
-        .references()
+        .references("id")
         .inTable("roles");
     })
     .createTable("pizzas", (tbl) => {
@@ -49,10 +50,10 @@ exports.up = function (knex) {
     })
     .createTable("malzemeler", (tbl) => {
       tbl.increments();
-      tbl.string("malzeme name", 64).notNullable();
+      tbl.string("malzeme_name", 64).notNullable();
     })
     .createTable("orders", (tbl) => {
-      tbl.uuid("id");
+      tbl.increments();
       tbl.string("hamur", 32).notNullable();
       tbl.string("boyut", 32).notNullable();
       tbl.integer("adet").notNullable().unsigned();
@@ -60,17 +61,31 @@ exports.up = function (knex) {
       tbl.string("status", 32).defaultTo("sıraya alındı").notNullable();
       tbl.decimal("price").notNullable().unsigned();
       tbl
-        .integer("pizza id")
+        .integer("pizza_id")
         .unsigned()
         .notNullable()
         .references("id")
         .inTable("pizzas")
         .onDelete("NO ACTION") //pizza silinince orderın silinmesini istemem, o yüzden cascade kullanmayacağım. orderı silmeden pizzayı silmem gerekebilir mi? pizzayı yayından kaldırabilirim evet. burayı no action yapabilirim.
         .onUpdate("NO ACTION");
-      tbl.timestamps(); //created at ve updated at otomatik olarak yapacak çünkü timestampS dedim. (çoğul) eğer tekil timestamp deseydim, içine yazmam gerekirdi.
+      tbl
+        .integer("user_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("users")
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE");
+      tbl.timestamps(knex.fn.now()); //created at ve updated at otomatik olarak yapacak çünkü timestampS dedim. (çoğul) eğer tekil timestamp deseydim, içine yazmam gerekirdi.
     })
     .createTable("orders_malzemeler", (tbl) => {
-      tbl.uuid("order_id").notNullable(); //rakam olmadığı için unsigned dememe gerek yok.
+      tbl
+        .integer("order_id")
+        .notNullable()
+        .references("id")
+        .inTable("orders")
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE");
       tbl
         .integer("malzeme_id")
         .notNullable()
