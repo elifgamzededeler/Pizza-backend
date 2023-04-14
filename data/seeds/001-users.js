@@ -70,6 +70,8 @@ exports.seed = async function (knex) {
       status: "Hazırlanıyor",
       boyut: "Büyük",
       user_id: 2,
+      created_At: "2023-04-12 10:15:00",
+      updated_at: "2023-04-12 10:15:00",
     },
   ]);
   await knex("rating").insert([

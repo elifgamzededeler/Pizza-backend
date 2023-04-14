@@ -84,7 +84,7 @@ exports.up = function (knex) {
         .notNullable()
         .references("id")
         .inTable("orders")
-        .onDelete("CASCADE")
+        .onDelete("CASCADE") //order gittiğinde orders_malzemeler de temizlensin. bu yüzden cascade dedim. eğer bunu yazmazsam model functionda remove yaparken kendim yazmam gerekir
         .onUpdate("CASCADE");
       tbl
         .integer("malzeme_id")
@@ -101,13 +101,16 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  return knex.schema
-    .dropTableIfExists("orders_malzemeler") //sondan başa doğru export yapıyorum
-    .dropTableIfExists("orders")
-    .dropTableIfExists("malzemeler")
-    .dropTableIfExists("rating")
-    .dropTableIfExists("pizzas")
-    .dropTableIfExists("users")
-    .dropTableIfExists("roles");
+  return (
+    knex.schema
+      .dropTableIfExists("orders_malzemeler") //sondan başa doğru export yapıyorum
+      //orders_malzemeler tablosunu orders tablosu üzerinden edit edeceğim. bu yüzden orders_malzemelere model function yazmıyorum
+      .dropTableIfExists("orders")
+      .dropTableIfExists("malzemeler")
+      .dropTableIfExists("rating")
+      .dropTableIfExists("pizzas")
+      .dropTableIfExists("users")
+      .dropTableIfExists("roles")
+  );
 };
 //bu sayfadaki kodlarım bitince npm run migrate yapıyorum (o da knex migrate:latest yapıyor, package json dosyasında açılımını yazmıştık)
