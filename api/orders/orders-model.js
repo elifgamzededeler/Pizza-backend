@@ -4,9 +4,8 @@ function getAll() {
   //bu tek satırlık kod malzemelerle beraber gelmiyor o yüzden join yapacağım.
   //return db("orders"); //bu bize bir collection döner yani array döner
   return db("orders as o")
-    .leftJoin("order_malzemeler as om", "o.id", "om.order_id")
-    .leftJoin("malzemeler as m", "om.malzeme_id", "m.id")
-    .where("o.id", id);
+    .leftJoin("orders_malzemeler as om", "o.id", "om.order_id")
+    .leftJoin("malzemeler as m", "om.malzeme_id", "m.id");
 }
 
 function getById(id) {

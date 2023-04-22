@@ -1,9 +1,11 @@
 const router = require("express").Router(); //expressten routeri import ettim
 const Orders = require("./orders-model"); //model function olduğu için büyük harfle başladım. buradan orders-modeli import ettim
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const orders = await Orders.getAll();
+  res.json(orders);
   //routera şimdilik get request atıp string dönüp kontrol ediyoruz.
-  res.json("get all orders");
+  //res.json("get all orders");
 });
 
 router.get("/:id", (req, res) => {
