@@ -46,7 +46,7 @@ async function update(payload, id) {
     //order_malzemeler sil
     await trx("orders_malzemeler").where("order_id", id).delete(); //orders_malzemeler tablosunda order_id'si benim gönderdiğim idyle match olanları sildim
     //order malzemelerini ekle
-    if (payload.malzemeler.length > 0) {
+    if (payload.malzemeler && payload.malzemeler.length > 0) {
       //yani malzeme varsa array içerisinde malzeme idlerim var demektir.
       const orderMalzemeleri = payload.malzemeler.map((malzemeId) => {
         //her bir malzeme için function çalıştırıyorum

@@ -1,16 +1,16 @@
 const db = require("../../data/dbconfig");
 
 async function create(payload) {
-  const [id] = await db("rating").insert(payload, id);
+  const [id] = await db("rating").insert(payload);
   return id;
 }
 
-async function update(payload, id) {
+function update(payload, id) {
   return db("rating").where("id", id).update(payload);
 }
 
-async function remove(id) {
-  return db("rating").where("id", id).delete(payload);
+function remove(id) {
+  return db("rating").where("id", id).delete();
 }
 
 module.exports = {

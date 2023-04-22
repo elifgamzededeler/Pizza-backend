@@ -1,11 +1,14 @@
 const router = require("express").Router();
+const User = require("../users/users-model");
 
-router.get("/login", (req, res) => {
+router.post("/login", (req, res) => {
   res.json("login");
 });
 
-router.get("/register", (req, res) => {
-  res.json("register");
+router.post("/register", async (req, res) => {
+  const payload = req.body;
+  const newUser = await User.create(payload);
+  res.json(newUser);
 });
 
 router.put("/password", (req, res) => {
