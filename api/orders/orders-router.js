@@ -8,31 +8,36 @@ router.get("/", async (req, res) => {
   //res.json("get all orders");
 });
 
-router.get("/:id", (req, res) => {
-  res.json("get order by id");
+router.get("/:id", async (req, res) => {
+  const order = await Orders.getById(req.params.id);
+  if (order) {
+    res.json(order);
+  } else {
+    res
+      .status(400)
+      .json({ message: `${req.params.id}'li sipariş bulunamadı...` });
+  }
 });
 
 router.post("/", async (req, res) => {
-  const newOrder = {
-    pizza_id: 1,
-    hamur: "Kalın",
-    price: 85.5,
-    adet: 1,
-    status: "Hazırlanıyor",
-    boyut: "Büyük",
-    user_id: 2,
-    created_At: "2023-04-12 10:15:00",
-    updated_at: "2023-04-12 10:15:00",
-  };
-  const order = await Orders.create(newOrder); //orders modelinin içinde create function oluşturdum, burada onu kullanıyorum.
-  res.json(order);
+  const payload = req.body; //payloadı req.bodysinden aldım
+  payload.status = "Sipariş hazırlanıyor"; //payloada status ekledim.
+  payload.user_id = 2; //payloada user_id ekledim
+  const order = await Orders.create(payload); //orders modelinin içinde create function oluşturdum, burada onu kullanıyorum.
+  res.status(201).json(order);
 });
 
-router.put("/:id", (req, res) => {
-  res.json("update order");
+router.post("/:id", async (req, res) => {
+  const payload = req.body;
+  payload.status = "Sipariş hazırlanıyor";
+  payload.user_id = 2;
+  const count = await Orders.update(payload, req.params.id);
+  res.status(201).json({ message: `${req.params.id} id'li order güncellendi` });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
+  const count = await Orders.remove(req.params.id);
+  res.json({ message: `${count} order silindi` });
   res.json("delete order");
 });
 

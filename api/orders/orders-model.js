@@ -5,12 +5,13 @@ function getAll() {
   //return db("orders"); //bu bize bir collection döner yani array döner
   return db("orders as o")
     .leftJoin("orders_malzemeler as om", "o.id", "om.order_id")
-    .leftJoin("malzemeler as m", "om.malzeme_id", "m.id");
+    .leftJoin("malzemeler as m", "om.malzeme_id", "m.id")
+    .select("o.id", "o.status"); //devamını todo sonra
 }
 
 function getById(id) {
   return db("orders as o")
-    .leftJoin("order_malzemeler as om", "o.id", "om.order_id")
+    .leftJoin("orders_malzemeler as om", "o.id", "om.order_id")
     .leftJoin("malzemeler as m", "om.malzeme_id", "m.id")
     .where("o.id", id)
     .first(); //bu function id alsın, orders tablosunun "id" kolonundakilerden bizim gönderdiğimiz id ile match edenleri alsın ve bana ilkini dönsün.
@@ -21,7 +22,9 @@ async function create(payload) {
   //TO DO: MALZEME UPDATE YAPACAĞIM. Burada 2 tablo düzenleyeceğim için TRANSACTION A ihtiyacım var.
   let id;
   await db.transaction(async (trx) => {
-    [id] = await db("orders").insert(payload); //bu fonksyion bit payload alsın. orders tablosuna payload inputunu insert edelim. ve bunu dönelim.
+    const orderPayload = { ...payload };
+    delete orderPayload.malzemeler;
+    [id] = await trx("orders").insert(orderPayload); //bu fonksyion bit payload alsın. orders tablosuna payload inputunu insert edelim. ve bunu dönelim.
     if (payload.malzemeler && payload.malzemeler.length > 0) {
       const orderMalzemeleri = payload.malzemeler.map((malzemeId) => {
         const yeniMalzeme = {
@@ -58,7 +61,9 @@ async function update(payload, id) {
       await trx("orders_malzemeler").insert(orderMalzemeleri);
     }
     //orderı update et
-    count = trx("orders").where("id", id).update(payload); //gönderdiğimiz id liyi gönderdiğimiz payload ile update et
+    const orderPayload = { ...payload };
+    delete orderPayload.malzemeler;
+    count = await trx("orders").where("id", id).update(orderPayload); //gönderdiğimiz id liyi gönderdiğimiz payload ile update et
     //updated row count döner
     //db yazmak yerine trx yazdık fonksiyona öyle geliyor
   });
