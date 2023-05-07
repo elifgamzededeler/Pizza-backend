@@ -4,7 +4,7 @@ const checkUser = async (req, res, next) => {
   try {
     const registeredUser = await User.getByFilter({ email: req.body.email });
     if (registeredUser) {
-      req.User = registeredUser;
+      req.user = registeredUser;
       next();
     } else {
       next({ status: 500, message: "invalid creditentials" });
