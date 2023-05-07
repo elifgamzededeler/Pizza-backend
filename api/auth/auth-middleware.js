@@ -55,8 +55,8 @@ const checkPayload = (req, res, next) => {
 const hashPassword = (req, res, next) => {
   try {
     const password = req.body.password;
-    const hashPassword = bcrypt.hashSync(password, HASH_ROUND);
-    req.body.password = hashPassword;
+    const hashedPassword = bcrypt.hashSync(password, HASH_ROUND);
+    req.body.password = hashedPassword;
     next(); //next demeyi unutursan istek askıda kalır. döner durur
   } catch (err) {
     next({ status: 500, message: "Password hashing error" });
@@ -67,6 +67,7 @@ const checkPassword = (req, res, next) => {
   try {
     const password = req.body.password;
     if (bcrypt.compareSync(password, req.user.password)) {
+      //hashlenmiş password var, normal password yok. İki tane hashlemmiş passwordü birbiriyle karşılaştırıyor
       next();
     } else {
       next({ status: 400, message: "invalid creditentials" });
@@ -85,7 +86,7 @@ const checkLoginPayload = (req, res, next) => {
     if (
       !req.body.password ||
       !req.body.password.trim() ||
-      req.body.password.length <= 4
+      req.body.password.length < 4
     ) {
       next({
         status: 400,
